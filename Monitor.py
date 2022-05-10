@@ -19,7 +19,7 @@ if __name__ == "__main__":
         time.sleep(3)
         if(value != monitor()):
             #zeroMQ 핸들러에게 날리기
-            socket.send_string(value)
+            socket.send_string(monitor())
             print('send')
 
 

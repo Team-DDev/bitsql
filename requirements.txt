@@ -1,0 +1,5 @@
+# JSON RPC from bitcoind
+python-bitcoinrpc
+
+# ZeroMQ
+pyzmq

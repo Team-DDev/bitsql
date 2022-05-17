@@ -33,7 +33,7 @@ def main():
     if FLAGS.reset:
         cur.execute('''DROP TABLE IF EXISTS blk;''')
         if DEBUG:
-            print(f'[{int(time.time()-STIME)}] DROP all tables of {secret.db_database}')
+            print(f'[{int(time.time()-STIME)}] DROP all tables of {secret.db_databasename}')
 
     cur.execute('''CREATE TABLE blk (
                      id INT NOT NULL,

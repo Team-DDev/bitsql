@@ -16,11 +16,17 @@ def main():
         print(f'Parsed arguments {FLAGS}')
         print(f'Unparsed arguments {_}')
 
-    conn, cur = utils.connectdb(user=secret.db_username,
-                                password=secret.db_password,
-                                host=secret.db_host,
-                                port=secret.db_port,
-                                database=secret.db_databasename)
+    try:
+        conn = mariadb.connect(user=secret.db_username,
+                               password=secret.db_password,
+                               host=secret.db_host,
+                               port=secret.db_port,
+                               database=secret.db_databasename)
+        cur = conn.cursor()
+    except mariadb.Error as e:
+        print(f'Error connecting to MariaDB: {e}')
+        sys.exit(0)
+
     if DEBUG:
         print(f'[{int(time.time()-STIME)}] Connect to database')
 

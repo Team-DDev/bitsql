@@ -2,6 +2,12 @@
 
 ## Requirements
 
+0. Library
+
+```bash
+sudo apt install libmariadb-dev
+```
+
 1. Download (bitcoin core)[https://bitcoin.org/en/download] and Block data
 
 ```bash
@@ -45,6 +51,17 @@ bitcoind -reindex -rescan
 
 - [Install on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
+```bash
+sudo apt install ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# uno to focal
+sudo vi /etc/apt/sources.list.d/docker.list
+sudo apt update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
 - (Recommended) Running docker on a non-root user
 
 - [Guide: Post-installation steps for Linux](https://docs.docker.com/engine/install/linux-postinstall/)
@@ -54,6 +71,8 @@ sudo usermod -aG docker $USER
 ```
 
 - [MariaDB Docker Hub Reference](https://hub.docker.com/_/mariadb)
+
+  - [System Variable](https://mariadb.com/kb/en/server-system-variables/)
 
 ```bash
 docker pull mariadb

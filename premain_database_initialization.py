@@ -38,7 +38,7 @@ def main():
     cur.execute('''CREATE TABLE blk (
                      id INT NOT NULL,
                      blkhash CHAR(64) NOT NULL,
-                     miningtime TIMESTAMP NOT NULL,
+                     miningtime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                      PRIMARY KEY (id),
                      UNIQUE (blkhash)
                    );''')
@@ -47,8 +47,21 @@ def main():
 
     cur.execute('''SHOW TABLES;''')
     res = cur.fetchall()
+    tables = []
     if DEBUG:
-        print(f'[{int(time.time()-STIME)}] CREATE TABLES: {res}')
+        print(f'[{int(time.time()-STIME)}] CREATE TABLES:')
+    for row in res:
+        tables.append(row[0])
+        if DEBUG:
+            print(f'[{int(time.time()-STIME)}] > {table}')
+    if DEBUG:
+        for table in tables:
+            print(f'[{int(time.time()-STIME)}] > DESCRIBE {table}')
+            cur.execute(f'''DESCRIBE {table};''')
+            res = cur.fetchall()
+            for row in res:
+                print(f'[{int(time.time()-STIME)}] >> {row}')
+
 
     conn.commit()
     conn.close()

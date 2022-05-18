@@ -55,8 +55,9 @@ def main():
         if DEBUG:
             print(f'[{int(time.time()-STIME)}] > {table}')
     if DEBUG:
+        print(f'[{int(time.time()-STIME)}] DESCRIBE Tables')
         for table in tables:
-            print(f'[{int(time.time()-STIME)}] > DESCRIBE {table}')
+            print(f'[{int(time.time()-STIME)}] > {table}')
             cur.execute(f'''DESCRIBE {table};''')
             res = cur.fetchall()
             for row in res:

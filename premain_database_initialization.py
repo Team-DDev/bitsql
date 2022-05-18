@@ -38,7 +38,7 @@ def main():
     cur.execute('''CREATE TABLE blk (
                      id INT NOT NULL,
                      blkhash CHAR(64) NOT NULL,
-                     miningtime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                     miningtime TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
                      PRIMARY KEY (id),
                      UNIQUE (blkhash)
                    );''')

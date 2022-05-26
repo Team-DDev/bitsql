@@ -1,8 +1,8 @@
 import argparse
+import sys
 import zmq
 import mariadb
 import datetime
-from time import strftime
 
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 
@@ -18,6 +18,63 @@ def convert_time(block_time):
 
     return convert_time
 
+
+def check_orphanblock(message):
+    global RPCM
+
+    rpc = RPCM
+
+    try:
+        conn = mariadb.connect(user=secret.db_username,
+                               password=secret.db_password,
+                               host=secret.db_host,
+                               port=secret.db_port,
+                               database=secret.db_databasename)
+        cur = conn.cursor()
+
+    except mariadb.Error as e:
+        print(f'Error connecting to MariaDB: {e}')
+        sys.exit(0)
+
+    message_height = message['height']
+    message_hash = message['hash']
+
+    checkheight = message_height
+    while (checkheight != 700000):
+
+        try:
+            block = rpc.getblock(message_hash)
+
+        except(BrokenPipeError, JSONRPCException):
+            RPCM = AuthServiceProxy("http://%s:%s@127.0.0.1:8332" % (secret.rpc_username, secret.rpc_password))
+            rpc = RPCM
+
+        blockhash = rpc.getblockhash(checkheight)
+        temp_block = rpc.getblock(blockhash)
+
+        check_previoushash = temp_block['previousblockhash']
+
+        cur.execute('''SELECT id, blkhash FROM blk WHERE id = %s''', [checkheight - 1])
+        temp = cur.fetchall()
+
+        insertedblock_height = temp[0][0]
+        insertedblock_hash = temp[0][1]
+
+        if (check_previoushash == insertedblock_hash) is False:
+            cur.execute('''DELETE FROM blk WHERE id = %s''', [insertedblock_height])
+            conn.commmit()
+
+            insertblock = rpc.getblock(check_previoushash)
+            insertheight = checkheight - 1
+            inserthash = insertblock['hash']
+            inserttime = convert_time(insertblock['time'])
+
+            cur.execute('''INSERT INTO blk VALUES(?, ?, ?);''', (insertheight, inserthash, inserttime))
+            conn.commit()
+
+        checkheight -= 1
+
+    conn.close()
 
 def message_receiver():
     global RPCM
@@ -76,6 +133,8 @@ def message_receiver():
 
             cur.execute('''INSERT INTO blk VALUES(?, ?, ?);''', (message['height'], message['hash'], time))
             conn.commit()
+
+        check_orphanblock(message)
 
         conn.commit()
         conn.close()

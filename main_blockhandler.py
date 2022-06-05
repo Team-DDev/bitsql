@@ -45,7 +45,12 @@ def checkorphanblock(currentheight):
             rpc = RPCM
 
         cur.execute('''SELECT blkhash FROM blk WHERE id = %s''', [checkheight])
-        checkhash = cur.fetchall()[0][0]
+        checkhash = cur.fetchall()
+
+        if not checkhash:
+            break
+        else:
+            checkhash = checkhash[0][0]
 
         currenthash = rpc.getblockhash(checkheight)
 
@@ -148,7 +153,11 @@ def message_receiver():
             rpc = RPCM
 
         cur.execute('''SELECT max(id) FROM blk''')
+
         currentheight = cur.fetchall()[0][0]
+
+        if currentheight == None:
+            currentheight = 1
 
         checkorphanblock(currentheight)
         insert_blk(currentheight, message)

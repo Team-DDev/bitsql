@@ -97,8 +97,8 @@ def insert_blk(currentheight, message):
     dif = message['height'] - currentheight
 
     if dif > 1:
-        for i in range(dif):
-            insert_height = currentheight + i + 1
+        for i in range(currentheight + 1, message['height'] + 1):
+            insert_height = i
 
             temp_block_hash = rpc.getblockhash(insert_height)
             temp_block = rpc.getblock(temp_block_hash)
@@ -157,7 +157,7 @@ def message_receiver():
         currentheight = cur.fetchall()[0][0]
 
         if currentheight == None:
-            currentheight = 1
+            currentheight = -1
 
         checkorphanblock(currentheight)
         insert_blk(currentheight, message)

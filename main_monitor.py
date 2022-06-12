@@ -12,14 +12,27 @@ RPCM = None
 
 
 def monitor():
-    rpc = RPCM
+    global RPCM
+
+    try:
+        if RPCM is None:
+            raise BrokenPipeError
+        rpc = RPCM
+        best_block_hash = rpc.getbestblockhash()
+
+    except(BrokenPipeError, JSONRPCException, ConnectionError):
+        RPCM = AuthServiceProxy("http://%s:%s@127.0.0.1:8332" % (secret.rpc_username, secret.rpc_password))
+        rpc = RPCM
+
     best_block_hash = rpc.getbestblockhash()
 
     return best_block_hash
 
 
 def monitor_message(best_block_hash):
+    global RPCM
     rpc = RPCM
+
     block = rpc.getblock(monitor())
 
     message = {'hash': monitor(), 'height': block['height']}
@@ -52,8 +65,6 @@ def main():
 
 
 if __name__ == "__main__":
-    RPCM = AuthServiceProxy("http://%s:%s@127.0.0.1:8332" % (secret.rpc_username, secret.rpc_password))
-    rpc = RPCM
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--debug', action='store_true',

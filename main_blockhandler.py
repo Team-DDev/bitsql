@@ -11,13 +11,41 @@ import secret
 FLAGS = _ = None
 DEBUG = False
 RPCM = None
+RETRY = 5
 
 
 def convert_time(block_time):
-    convert_time = datetime.datetime.utcfromtimestamp(block_time).strftime("%Y-%m-%d %H:%M:%S")
+    convert_time = datetime.datetime.utcfromtimestamp(
+                     block_time).strftime("%Y-%m-%d %H:%M:%S")
 
     return convert_time
 
+
+def connect_db(user, password, host, port, database):
+    try:
+        conn = mariadb.connect(user=user,
+                               password=password,
+                               host=host,
+                               port=port,
+                               database=database)
+        cur = conn.cursor()
+
+    except mariadb.Error as e:
+        print(f'Error connecting to MariaDB: {e}')
+        sys.exit(0)
+
+    return conn, cur
+
+
+def call_rpc(command, user, password, ip, port):
+    global RPCM
+    rpc = RPCM
+
+    for _ in range(RETRY):
+        if rpc is None:
+            
+        try:
+            rpc
 
 def checkorphanblock(currentheight):
     global RPCM
@@ -184,3 +212,4 @@ if __name__ == "__main__":
     DEBUG = FLAGS.debug
 
     main()
+

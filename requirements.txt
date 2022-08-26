@@ -1,6 +1,0 @@
-# JSON RPC from bitcoind
-python-bitcoinrpc
-# MariaDB connector
-mariadb
-# ZeroMQ
-pyzmq
